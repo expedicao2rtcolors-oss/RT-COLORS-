@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RT COLORS • Gestão</title>
+<style>
+:root {
+  --site-primary: #174ea6;
+  --site-on-primary: #ffffff;
+  --site-secondary: #dbeafe;
+  --site-on-secondary: #174ea6;
+  --site-background: #f3f7fd;
+  --site-on-background: #17253d;
+  --site-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-font-heading: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-heading-scale: 1;
+  --site-spacing-scale: 1;
+  --site-radius-scale: 1;
+  --site-decoration-opacity: 1;
+  color-scheme: light dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--site-font-body); color: light-dark(#172521,#e9f1ed); background: light-dark(#f3f6f4,#111a17); }
+#app { min-height: 100vh; width: 100%; border-radius: 0; background-color: var(--site-background); color: var(--site-on-background); }
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+.shell { display: grid; grid-template-columns: 248px minmax(0,1fr); min-height: 100vh; }
+.sidebar { background: var(--site-primary); color: var(--site-on-primary); padding: calc(26px * var(--site-spacing-scale)) 18px; display:flex; flex-direction:column; gap:28px; }
+.brand { display:flex; align-items:center; gap:12px; padding: 0 6px; }
+.brand-mark { width:42px; height:42px; border-radius:14px; background:#e4efff; color:#174ea6; display:grid; place-items:center; font-weight:900; letter-spacing:-1px; }
+.brand strong { display:block; font-size:15px; letter-spacing:.7px; }
+.brand small { display:block; color:#c4d9fb; margin-top:4px; font-size:11px; letter-spacing:1.8px; }
+.nav-label { color:#a9c5f5; font-size:10px; font-weight:800; letter-spacing:1.7px; padding:0 12px; }
+.nav { display:grid; gap:7px; }
+.nav button { display:flex; gap:12px; align-items:center; text-align:left; border:0; color:#dbe8ff; background:transparent; padding:12px 13px; border-radius:12px; font-size:13px; }
+.nav button.active, .nav button:hover { background:#2b61b8; color:white; }
+.nav .ico { width:20px; text-align:center; font-size:17px; }
+.sidebar-note { margin-top:auto; border:1px solid #3d67a9; background:#163f7f; border-radius:15px; padding:15px; font-size:12px; line-height:1.5; color:#dce9ff; }
+.sidebar-note b { display:block; color:#fff; margin-bottom:5px; }
+.main { min-width:0; }
+.topbar { height:76px; padding:0 34px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid light-dark(#e1e9e4,#2b3832); background:light-dark(#fff,#18221e); }
+.crumb { color:light-dark(#7a8a82,#a7b8af); font-size:12px; }
+.crumb b { color:light-dark(#1d3129,#e6f1eb); font-weight:700; }
+.top-right { display:flex; align-items:center; gap:16px; }
+.status { display:flex; align-items:center; gap:7px; border-radius:30px; background:light-dark(#e9f6ef,#21382e); color:light-dark(#2b7651,#a9e6c3); padding:8px 11px; font-size:11px; font-weight:700; }
+.dot { width:7px; height:7px; border-radius:50%; background:#4bc584; }
+.avatar { width:35px; height:35px; border-radius:50%; background:var(--site-secondary); color:var(--site-on-secondary); display:grid; place-items:center; font-size:12px; font-weight:800; }
+.content { max-width:1440px; margin:0 auto; padding:32px 34px 42px; }
+.heading-row { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; margin-bottom:25px; }
+.eyebrow { text-transform:uppercase; font-size:10px; letter-spacing:2px; font-weight:800; color:#2865bd; margin-bottom:10px; }
+h1 { font-family:var(--site-font-heading); font-size:calc(30px * var(--site-heading-scale)); letter-spacing:-1.1px; margin:0; line-height:1.15; }
+.subtitle { color:light-dark(#728078,#a9b9b0); font-size:13px; margin-top:9px; }
+.btn { border:1px solid light-dark(#d8e3dc,#3a4941); border-radius:11px; padding:11px 15px; background:light-dark(#fff,#202c26); color:inherit; font-size:12px; font-weight:750; display:inline-flex; align-items:center; gap:8px; }
+.btn.primary { background:var(--site-primary); color:var(--site-on-primary); border-color:var(--site-primary); }
+.btn:hover { filter:brightness(1.08); }
+.stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:15px; margin-bottom:24px; }
+.stat { background:light-dark(#fff,#18221e); border:1px solid light-dark(#e1e9e4,#2b3832); border-radius:16px; padding:19px 20px; }
+.stat-top { display:flex; justify-content:space-between; align-items:center; color:light-dark(#718078,#a7b7ae); font-size:12px; }
+.stat-icon { width:33px; height:33px; display:grid; place-items:center; border-radius:10px; background:var(--site-secondary); color:var(--site-on-secondary); font-size:16px; }
+.stat-value { font-size:27px; font-weight:800; letter-spacing:-.8px; margin-top:12px; }
+.stat-foot { color:light-dark(#7a8a82,#9bad a2); font-size:11px; margin-top:4px; }
+.panel { background:light-dark(#fff,#18221e); border:1px solid light-dark(#e1e9e4,#2b3832); border-radius:17px; overflow:hidden; }
+.panel-head { padding:20px 22px; display:flex; align-items:center; justify-content:space-between; gap:15px; border-bottom:1px solid light-dark(#e8eee9,#2b3832); }
+.panel-head h2 { margin:0; font-size:15px; letter-spacing:-.2px; }
+.panel-head p { margin:5px 0 0; color:light-dark(#7b8982,#a9b8b0); font-size:11px; }
+.tools { display:flex; gap:9px; align-items:center; }
+.search { position:relative; }
+.search input { width:230px; padding:10px 12px 10px 34px; border:1px solid light-dark(#dce6df,#38473f); border-radius:10px; background:light-dark(#fbfcfb,#131c18); color:inherit; outline:none; font-size:12px; }
+.search input:focus, .field input:focus, .field select:focus { border-color:#4b83dc; box-shadow:0 0 0 3px #4b83dc25; }
+.search span { position:absolute; left:12px; top:8px; color:#819087; }
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; min-width:650px; }
+th { text-align:left; font-size:10px; color:light-dark(#7c8b83,#a2b2a9); letter-spacing:1px; text-transform:uppercase; background:light-dark(#f8faf8,#1b2721); padding:13px 22px; font-weight:800; }
+td { padding:16px 22px; border-top:1px solid light-dark(#edf1ee,#29362f); font-size:12px; white-space:nowrap; }
+.client-cell { display:flex; align-items:center; gap:11px; }
+.client-avatar { width:34px; height:34px; border-radius:11px; background:var(--avatar-bg,#e2f0e9); color:var(--avatar-color,#285c49); display:grid; place-items:center; font-size:11px; font-weight:850; }
+.client-name { font-weight:750; font-size:12px; }
+.client-code { color:light-dark(#849189,#9aaca2); font-size:10px; margin-top:4px; }
+.color-chip { display:inline-flex; align-items:center; gap:7px; color:light-dark(#52635a,#b7c5bd); }
+.swatch { width:10px; height:10px; border-radius:4px; border:1px solid #0002; }
+.price { font-weight:800; font-size:13px; }
+.tag { display:inline-flex; align-items:center; border-radius:30px; padding:6px 9px; background:light-dark(#e9f6ef,#21392e); color:light-dark(#2f7853,#a8e2bf); font-size:10px; font-weight:800; }
+.actions { display:flex; gap:6px; }
+.icon-btn { width:30px; height:30px; border:1px solid light-dark(#e0e8e2,#37453e); border-radius:8px; background:transparent; color:inherit; }
+.icon-btn:hover { background:var(--site-secondary); color:var(--site-on-secondary); }
+.table-foot { padding:14px 22px; display:flex; justify-content:space-between; color:light-dark(#7a8981,#a0b0a7); font-size:11px; border-top:1px solid light-dark(#e8eee9,#2b3832); }
+.form-panel { display:none; margin-bottom:20px; padding:20px; }
+.form-panel.open { display:block; }
+.form-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:17px; }
+.form-head h2 { margin:0; font-size:15px; }
+.form-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.field label { display:block; font-size:11px; font-weight:750; color:light-dark(#53645b,#b6c6bd); margin-bottom:7px; }
+.field input, .field select { width:100%; border:1px solid light-dark(#dce6df,#38473f); border-radius:10px; background:light-dark(#fbfcfb,#131c18); color:inherit; padding:11px 12px; outline:none; font-size:12px; min-width:0; }
+.form-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
+.empty { padding:35px 15px; text-align:center; color:light-dark(#77877e,#a8b7af); font-size:13px; }
+.toast { position:fixed; bottom:22px; right:22px; background:#174ea6; color:white; padding:13px 17px; border-radius:12px; font-size:12px; box-shadow:0 12px 32px #0002; display:none; z-index:10; }
+.footer-note { display:flex; gap:9px; align-items:center; color:light-dark(#7c8b83,#a7b6ad); font-size:11px; margin-top:17px; }
+.footer-note span { color:#2865bd; }
+@media(max-width:980px) { .shell{grid-template-columns:76px minmax(0,1fr)} .sidebar{padding:22px 10px;align-items:center}.brand{padding:0}.brand-copy,.nav-label,.nav-text,.sidebar-note{display:none}.nav{width:100%}.nav button{justify-content:center;padding:12px 0}.nav .ico{font-size:19px}.content{padding:25px 20px}.topbar{padding:0 20px}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media(max-width:650px) { .shell{display:block}.sidebar{display:none}.topbar{height:60px;padding:0 16px}.content{padding:24px 14px}.heading-row{display:block}.heading-row>.btn{margin-top:18px}.stats{grid-template-columns:1fr;gap:10px}.stat{padding:15px 17px}.stat-value{font-size:24px}.panel-head{align-items:flex-start;flex-direction:column;padding:17px}.tools{width:100%;flex-wrap:wrap}.search{flex:1;min-width:170px}.search input{width:100%}.form-grid{grid-template-columns:1fr}.status{display:none}h1{font-size:27px}.table-foot{gap:12px;flex-direction:column} }
+</style>
+</head>
+<body>
+<div id="app">
+<div class="shell">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-mark">RT</div><div class="brand-copy"><strong>RT COLORS</strong><small>GESTÃO</small></div></div>
+  <div class="nav-label">MENU PRINCIPAL</div>
+  <nav class="nav">
+    <button class="active" type="button" data-view="prices"><span class="ico">▦</span><span class="nav-text">Preços por cliente</span></button>
+    <button type="button" data-view="clients"><span class="ico">♙</span><span class="nav-text">Clientes</span></button>
+    <button type="button" data-view="colors"><span class="ico">◉</span><span class="nav-text">Cores e acabamentos</span></button>
+  </nav>
+  <div class="sidebar-note"><b>✦ Protótipo inicial</b>Os dados desta prévia são demonstrativos e ficam somente nesta sessão do navegador.</div>
+</aside>
+<main class="main">
+  <header class="topbar"><div class="crumb">RT COLORS <span style="padding:0 8px;color:#a4b3aa">/</span> <b id="crumb-title">Preços por cliente</b></div><div class="top-right"><div class="status"><span class="dot"></span> MODO DE TESTE</div><div class="avatar">RT</div></div></header>
+  <section class="content">
+    <div class="heading-row"><div><div class="eyebrow">CONTROLE COMERCIAL</div><h1 id="page-title">Preços por cliente</h1><div class="subtitle" id="page-subtitle">Consulte e mantenha os valores comerciais organizados em um só lugar.</div></div><button class="btn primary" id="add-top">＋ Novo preço</button></div>
+    <div class="stats">
+      <div class="stat"><div class="stat-top">Clientes cadastrados <span class="stat-icon">♙</span></div><div class="stat-value" id="stat-clients">03</div><div class="stat-foot">Clientes na lista demonstrativa</div></div>
+      <div class="stat"><div class="stat-top">Preços registrados <span class="stat-icon">＄</span></div><div class="stat-value" id="stat-prices">04</div><div class="stat-foot">Valores por cliente e acabamento</div></div>
+      <div class="stat"><div class="stat-top">Última atualização <span class="stat-icon">◷</span></div><div class="stat-value" style="font-size:22px" id="stat-updated">Hoje</div><div class="stat-foot">Data de referência do protótipo</div></div>
+    </div>
+    <section class="panel form-panel" id="form-panel">
+      <div class="form-head"><h2 id="form-title">Cadastrar preço</h2><button class="icon-btn" id="close-form" aria-label="Fechar">×</button></div>
+      <form id="price-form">
+        <input type="hidden" id="edit-id">
+        <div class="form-grid">
+          <div class="field"><label for="client">Cliente</label><input id="client" required maxlength="80" placeholder="Nome do cliente"></div>
+          <div class="field"><label for="code">Código do cliente (opcional)</label><input id="code" maxlength="30" placeholder="Ex.: CLI-001"></div>
+          <div class="field"><label for="color">Cor / acabamento</label><input id="color" required maxlength="80" placeholder="Ex.: Preto fosco"></div>
+          <div class="field"><label for="price">Preço (R$)</label><input id="price" required type="number" min="0" step="0.01" placeholder="0,00"></div>
+        </div>
+        <p class="subtitle">Cadastre um preço específico para cada combinação de cliente e cor. O mesmo cliente pode ter valores diferentes para cores diferentes.</p>
+        <div class="form-actions"><button class="btn" type="button" id="cancel-form">Cancelar</button><button class="btn primary" type="submit">Salvar preço</button></div>
+      </form>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><div><h2 id="table-title">Tabela de preços</h2><p id="table-subtitle">Preços cadastrados por cliente e cor/acabamento</p></div><div class="tools"><div class="search"><span>⌕</span><input id="search" type="search" placeholder="Buscar cliente ou cor..."></div><button class="btn" id="export">⇩ Exportar CSV</button></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Cor / acabamento</th><th>Preço cadastrado</th><th>Status</th><th>Ações</th></tr></thead><tbody id="rows"></tbody></table><div id="empty" class="empty" style="display:none">Nenhum resultado encontrado. Tente outra busca ou cadastre um novo preço.</div></div>
+      <div class="table-foot"><span id="row-count">Exibindo 4 registros demonstrativos</span><span>Moeda: Real brasileiro (BRL)</span></div>
+    </section>
+    <div class="footer-note"><span>●</span> Protótipo para avaliação. Para compartilhar os dados entre computadores e celulares, será necessário conectar um banco de dados online e configurar o acesso.</div>
+  </section>
+</main>
+</div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const demo = [
+ {id:1,client:'Alumínios Horizonte',code:'CLI-001',color:'Branco brilhante',price:18.50,updated:'28/10/2026',swatch:'#f5f5ee'},
+ {id:2,client:'Esquadrias Nova Era',code:'CLI-002',color:'Preto fosco',price:24.90,updated:'28/10/2026',swatch:'#323532'},
+ {id:3,client:'Alumínios Horizonte',code:'CLI-001',color:'Anodizado natural',price:21.75,updated:'27/10/2026',swatch:'#b9c2c0'},
+ {id:4,client:'Metalúrgica Central',code:'CLI-003',color:'Bronze 1003',price:27.00,updated:'25/10/2026',swatch:'#98765d'}
+];
+let records = demo.map(x=>({...x}));
+let nextId = 5;
+const $ = id => document.getElementById(id);
+const initials = name => name.split(/\s+/).filter(Boolean).slice(0,2).map(s=>s[0]).join('').toUpperCase();
+const money = n => Number(n).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(message){const t=$('toast');t.textContent=message;t.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display='none',2600)}
+function render(){
+ const query=$('search').value.trim().toLocaleLowerCase('pt-BR');
+ const shown=records.filter(r=>(r.client+' '+r.code+' '+r.color).toLocaleLowerCase('pt-BR').includes(query));
+ $('rows').innerHTML=shown.map((r,i)=>`<tr><td><div class="client-cell"><div class="client-avatar" style="--avatar-bg:${['#e2f0e9','#e8e9fa','#f7eadf','#e3edf8'][i%4]};--avatar-color:${['#285c49','#4c4d8a','#93613b','#3c648a'][i%4]}">${esc(initials(r.client))}</div><div><div class="client-name">${esc(r.client)}</div><div class="client-code">${esc(r.code||'Sem código')}</div></div></div></td><td><span class="color-chip"><span class="swatch" style="background:${esc(r.swatch||'#dce3de')}"></span>${esc(r.color)}</span></td><td><span class="price">${money(r.price)}</span></td><td><span class="tag">● Ativo</span></td><td><div class="actions"><button class="icon-btn" title="Editar" aria-label="Editar" data-edit="${r.id}">✎</button><button class="icon-btn" title="Excluir" aria-label="Excluir" data-delete="${r.id}">×</button></div></td></tr>`).join('');
+ $('empty').style.display=shown.length?'none':'block';
+ $('row-count').textContent=`Exibindo ${shown.length} de ${records.length} registro${records.length===1?'':'s'}`;
+ const clients=new Set(records.map(r=>r.client.toLocaleLowerCase('pt-BR'))).size;
+ $('stat-clients').textContent=String(clients).padStart(2,'0'); $('stat-prices').textContent=String(records.length).padStart(2,'0');
+}
+function openForm(record){$('form-panel').classList.add('open');$('form-title').textContent=record?'Editar preço por cliente e cor':'Definir preço para cor do cliente';$('edit-id').value=record?record.id:'';$('client').value=record?.client||'';$('code').value=record?.code||'';$('color').value=record?.color||'';$('price').value=record?record.price:'';$('client').focus();$('form-panel').scrollIntoView({behavior:'smooth',block:'nearest'})}
+function closeForm(){$('form-panel').classList.remove('open');$('price-form').reset();$('edit-id').value=''}
+$('add-top').addEventListener('click',()=>openForm());$('close-form').addEventListener('click',closeForm);$('cancel-form').addEventListener('click',closeForm);$('search').addEventListener('input',render);
+$('price-form').addEventListener('submit',e=>{e.preventDefault();const id=$('edit-id').value;const client=$('client').value.trim();const color=$('color').value.trim();const price=Number($('price').value);if(!client||!color||!Number.isFinite(price)||price<0)return;const existing=records.find(r=>r.id===Number(id));const obj={id:id?Number(id):nextId++,client,code:$('code').value.trim(),color,price,updated:new Date().toLocaleDateString('pt-BR'),swatch:existing?.swatch||'#dce3de'};if(id)records=records.map(r=>r.id===Number(id)?obj:r);else records.unshift(obj);closeForm();render();toast(id?'Preço atualizado nesta prévia.':'Preço cadastrado nesta prévia.');});
+$('rows').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]');const del=e.target.closest('[data-delete]');if(edit){const r=records.find(x=>x.id===Number(edit.dataset.edit));if(r)openForm(r)}if(del){const r=records.find(x=>x.id===Number(del.dataset.delete));if(r&&confirm(`Excluir o preço de ${r.client} — ${r.color}?`)){records=records.filter(x=>x.id!==r.id);render();toast('Registro removido desta prévia.')}}});
+$('export').addEventListener('click',()=>{const header=['Cliente','Código','Cor/acabamento','Preço (R$)','Atualizado em'];const csv=[header,...records.map(r=>[r.client,r.code,r.color,Number(r.price).toFixed(2).replace('.',','),r.updated])].map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='rt-colors-precos.csv';a.click();URL.revokeObjectURL(url);toast('CSV exportado para este dispositivo.');});
+const viewMeta={prices:['Preços por cliente','Preços por cliente','Defina um valor comercial para cada cor ou acabamento de cada cliente.','Tabela de preços por cliente','Cada linha representa o preço de uma cor para um cliente específico.','＋ Definir preço'],clients:['Clientes','Clientes','Visualize os clientes que possuem preços registrados.','Lista de clientes','Clientes encontrados na tabela de preços','＋ Novo cliente'],colors:['Cores e acabamentos','Cores e acabamentos','Veja os acabamentos cadastrados nos preços de clientes.','Lista de cores','Cores e acabamentos encontrados','＋ Novo preço']};
+document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const v=btn.dataset.view,m=viewMeta[v];$('crumb-title').textContent=m[0];$('page-title').textContent=m[1];$('page-subtitle').textContent=m[2];$('table-title').textContent=m[3];$('table-subtitle').textContent=m[4];$('add-top').textContent=m[5];if(v==='clients')$('search').placeholder='Buscar cliente...';else if(v==='colors')$('search').placeholder='Buscar cor ou acabamento...';else $('search').placeholder='Buscar cliente ou cor...';}));
+render();
+</script>
+</body>
+</html>
