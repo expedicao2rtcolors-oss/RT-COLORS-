@@ -18,10 +18,31 @@
 @media(max-width:980px){.shell{grid-template-columns:76px minmax(0,1fr)}.sidebar{padding:22px 10px;align-items:center}.brand{padding:0}.brand-copy,.nav-label,.nav-text,.sidebar-note{display:none}.nav{width:100%}.nav button{justify-content:center;padding:12px 0}.nav .ico{font-size:19px}.content{padding:23px 18px}.topbar{padding:0 18px}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{padding:23px}.hero-side{min-width:130px}}
 @media(max-width:650px){.shell{display:block}.sidebar{display:none}.topbar{height:60px;padding:0 14px}.content{padding:20px 12px}.heading-row{display:block}.heading-row>.btn{margin-top:16px}.hero{display:block;padding:22px 20px;min-height:0}.hero-title{font-size:20px}.hero-side{display:none}.stats{grid-template-columns:1fr;gap:10px}.stat{padding:15px 16px}.stat-value{font-size:24px}.panel-head{align-items:flex-start;flex-direction:column;padding:16px}.tools{width:100%;flex-wrap:wrap}.search{flex:1;min-width:170px}.search input{width:100%}.form-grid{grid-template-columns:1fr}.status{display:none}h1{font-size:26px}.table-foot{gap:12px;flex-direction:column}.panel{border-radius:12px}}
 
+
+#login-screen{position:fixed;inset:0;z-index:100;background:linear-gradient(145deg,#071d3b,#0b4c83);display:grid;place-items:center;padding:20px}
+.login-card{width:min(100%,420px);background:#fff;border-radius:20px;padding:30px;box-shadow:0 25px 70px #00152c55}
+.login-brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}.login-brand .brand-mark{flex-shrink:0}
+.login-card h2{font-size:23px;color:#102749;margin:0 0 8px}.login-card p{font-size:12px;color:#71819a;line-height:1.6;margin:0 0 22px}
+.login-card .field{margin-bottom:14px}.login-card .btn{width:100%;justify-content:center;padding:12px}.login-error{display:none;background:#fff0f0;color:#a52727;padding:10px 12px;border-radius:9px;font-size:12px;margin:12px 0}
+#app[hidden],#login-screen[hidden]{display:none!important}
+@media(max-width:650px){.login-card{padding:23px}}
 </style>
 </head>
 <body>
-<div id="app">
+
+<div id="login-screen">
+  <form class="login-card" id="login-form">
+    <div class="login-brand"><div class="brand-mark">RT</div><div><strong style="display:block;color:#102749;letter-spacing:.8px">RT COLORS</strong><small style="color:#71819a;letter-spacing:2px">GESTÃO SEGURA</small></div></div>
+    <h2>Acesse sua gestão</h2>
+    <p>Entre com o e-mail e a senha cadastrados no Supabase Authentication para acessar os dados comerciais.</p>
+    <div class="field"><label for="login-email">E-mail</label><input id="login-email" type="email" autocomplete="username" required placeholder="seu@email.com"></div>
+    <div class="field"><label for="login-password">Senha</label><input id="login-password" type="password" autocomplete="current-password" required placeholder="Sua senha"></div>
+    <div class="login-error" id="login-error" role="alert"></div>
+    <button class="btn primary" id="login-submit" type="submit">Entrar com segurança</button>
+    <p style="margin:16px 0 0;font-size:10px">Acesso restrito a usuários autenticados.</p>
+  </form>
+</div>
+<div id="app" hidden>
 <div class="shell">
 <aside class="sidebar">
   <div class="brand"><div class="brand-mark">RT</div><div class="brand-copy"><strong>RT COLORS</strong><small>GESTÃO</small></div></div>
@@ -31,17 +52,17 @@
     <button type="button" data-view="clients"><span class="ico">♙</span><span class="nav-text">Clientes</span></button>
     <button type="button" data-view="colors"><span class="ico">◉</span><span class="nav-text">Cores e acabamentos</span></button>
   </nav>
-  <div class="sidebar-note"><b>✦ Protótipo inicial</b>Os dados desta prévia são demonstrativos e ficam somente nesta sessão do navegador.</div>
+  <div class="sidebar-note"><b>✦ RT COLORS Gestão</b>Dados carregados do banco online com acesso autenticado.</div>
 </aside>
 <main class="main">
-  <header class="topbar"><div class="crumb">RT COLORS <span style="padding:0 8px;color:#a4b3aa">/</span> <b id="crumb-title">Preços por cliente</b></div><div class="top-right"><div class="status"><span class="dot"></span> MODO DE TESTE</div><div class="avatar">RT</div></div></header>
+  <header class="topbar"><div class="crumb">RT COLORS <span style="padding:0 8px;color:#a4b3aa">/</span> <b id="crumb-title">Preços por cliente</b></div><div class="top-right"><div class="status"><span class="dot"></span> BANCO CONECTADO</div><button class="btn" id="logout-btn" type="button">Sair</button><div class="avatar">RT</div></div></header>
   <section class="content">
     <div class="heading-row"><div><div class="eyebrow">CONTROLE COMERCIAL</div><h1 id="page-title">Preços por cliente</h1><div class="subtitle" id="page-subtitle">Consulte e mantenha os valores comerciais organizados em um só lugar.</div></div><button class="btn primary" id="add-top">＋ Novo preço</button></div>
     <section class="hero"><div class="hero-copy"><div class="hero-title">RT COLORS <span style="font-weight:400">• Gestão</span></div><p>Controle de clientes, cores e preços com mais organização, agilidade e confiança.</p></div><div class="hero-side">Mais organização<br>para o seu negócio.</div></section>
     <div class="stats">
-      <div class="stat"><div class="stat-top">Clientes cadastrados <span class="stat-icon">♙</span></div><div class="stat-value" id="stat-clients">03</div><div class="stat-foot">Clientes na lista demonstrativa</div></div>
+      <div class="stat"><div class="stat-top">Clientes cadastrados <span class="stat-icon">♙</span></div><div class="stat-value" id="stat-clients">03</div><div class="stat-foot">Clientes cadastrados no banco</div></div>
       <div class="stat"><div class="stat-top">Preços registrados <span class="stat-icon">＄</span></div><div class="stat-value" id="stat-prices">04</div><div class="stat-foot">Valores por cliente e acabamento</div></div>
-      <div class="stat"><div class="stat-top">Última atualização <span class="stat-icon">◷</span></div><div class="stat-value" style="font-size:22px" id="stat-updated">Hoje</div><div class="stat-foot">Data de referência do protótipo</div></div>
+      <div class="stat"><div class="stat-top">Última atualização <span class="stat-icon">◷</span></div><div class="stat-value" style="font-size:22px" id="stat-updated">Hoje</div><div class="stat-foot">Sincronizado com o banco online</div></div>
     </div>
     <section class="panel form-panel" id="form-panel">
       <div class="form-head"><h2 id="form-title">Cadastrar preço</h2><button class="icon-btn" id="close-form" aria-label="Fechar">×</button></div>
@@ -62,44 +83,108 @@
       <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Cor / acabamento</th><th>Preço cadastrado</th><th>Status</th><th>Ações</th></tr></thead><tbody id="rows"></tbody></table><div id="empty" class="empty" style="display:none">Nenhum resultado encontrado. Tente outra busca ou cadastre um novo preço.</div></div>
       <div class="table-foot"><span id="row-count">Exibindo 4 registros demonstrativos</span><span>Moeda: Real brasileiro (BRL)</span></div>
     </section>
-    <div class="footer-note"><span>●</span> Protótipo para avaliação. Para compartilhar os dados entre computadores e celulares, será necessário conectar um banco de dados online e configurar o acesso.</div>
+    <div class="footer-note"><span>●</span> Conectado ao Supabase. Alterações confirmadas pelo banco online.</div>
   </section>
 </main>
 </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const demo = [
- {id:1,client:'Alumínios Horizonte',code:'CLI-001',color:'Branco brilhante',price:18.50,updated:'28/10/2026',swatch:'#f5f5ee'},
- {id:2,client:'Esquadrias Nova Era',code:'CLI-002',color:'Preto fosco',price:24.90,updated:'28/10/2026',swatch:'#323532'},
- {id:3,client:'Alumínios Horizonte',code:'CLI-001',color:'Anodizado natural',price:21.75,updated:'27/10/2026',swatch:'#b9c2c0'},
- {id:4,client:'Metalúrgica Central',code:'CLI-003',color:'Bronze 1003',price:27.00,updated:'25/10/2026',swatch:'#98765d'}
-];
-let records = demo.map(x=>({...x}));
-let nextId = 5;
+const SUPABASE_URL = 'https://snixqpvwkxfjuhbaeizu.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_SzAn00SmZjxkVXef5P5I_w_wR1v2jia';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let records = [], clients = [], colors = [], currentView = 'prices';
 const $ = id => document.getElementById(id);
-const initials = name => name.split(/\s+/).filter(Boolean).slice(0,2).map(s=>s[0]).join('').toUpperCase();
-const money = n => Number(n).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function toast(message){const t=$('toast');t.textContent=message;t.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display='none',2600)}
+const initials = name => String(name||'?').split(/\\s+/).filter(Boolean).slice(0,2).map(s=>s[0]).join('').toUpperCase();
+const money = n => Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(message){const t=$('toast');t.textContent=message;t.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display='none',3200)}
+function showLogin(message=''){ $('login-screen').hidden=false; $('app').hidden=true; $('login-error').textContent=message; $('login-error').style.display=message?'block':'none'; }
+function showApp(){ $('login-screen').hidden=true; $('app').hidden=false; }
+async function loadAll(){
+  $('rows').innerHTML='<tr><td colspan="5" class="empty">Carregando dados do banco...</td></tr>';
+  const [cRes,coRes,relRes] = await Promise.all([
+    supabase.from('clientes').select('*').order('nome'),
+    supabase.from('cores').select('*').order('nome'),
+    supabase.from('cliente_cores').select('*')
+  ]);
+  const err = cRes.error || coRes.error || relRes.error;
+  if(err) throw err;
+  clients=cRes.data||[]; colors=coRes.data||[];
+  records=(relRes.data||[]).map(r=>{
+    const c=clients.find(x=>String(x.id)===String(r.cliente_id));
+    const co=colors.find(x=>String(x.id)===String(r.cor_id));
+    return {id:r.id,cliente_id:r.cliente_id,cor_id:r.cor_id,client:c?.nome||'Cliente não encontrado',code:c?.codigo||c?.codigo_cliente||'',color:co?.nome||'Cor não encontrada',price:Number(r.preco||0),updated:r.atualizado_em||r.criado_em||'',swatch:co?.hex||'#dce3de',observacoes:r.observacoes||''};
+  });
+  render();
+}
 function render(){
- const query=$('search').value.trim().toLocaleLowerCase('pt-BR');
- const shown=records.filter(r=>(r.client+' '+r.code+' '+r.color).toLocaleLowerCase('pt-BR').includes(query));
- $('rows').innerHTML=shown.map((r,i)=>`<tr><td><div class="client-cell"><div class="client-avatar" style="--avatar-bg:${['#e2f0e9','#e8e9fa','#f7eadf','#e3edf8'][i%4]};--avatar-color:${['#285c49','#4c4d8a','#93613b','#3c648a'][i%4]}">${esc(initials(r.client))}</div><div><div class="client-name">${esc(r.client)}</div><div class="client-code">${esc(r.code||'Sem código')}</div></div></div></td><td><span class="color-chip"><span class="swatch" style="background:${esc(r.swatch||'#dce3de')}"></span>${esc(r.color)}</span></td><td><span class="price">${money(r.price)}</span></td><td><span class="tag">● Ativo</span></td><td><div class="actions"><button class="icon-btn" title="Editar" aria-label="Editar" data-edit="${r.id}">✎</button><button class="icon-btn" title="Excluir" aria-label="Excluir" data-delete="${r.id}">×</button></div></td></tr>`).join('');
- $('empty').style.display=shown.length?'none':'block';
- $('row-count').textContent=`Exibindo ${shown.length} de ${records.length} registro${records.length===1?'':'s'}`;
- const clients=new Set(records.map(r=>r.client.toLocaleLowerCase('pt-BR'))).size;
- $('stat-clients').textContent=String(clients).padStart(2,'0'); $('stat-prices').textContent=String(records.length).padStart(2,'0');
+ const q=$('search').value.trim().toLocaleLowerCase('pt-BR');
+ let base=records;
+ if(currentView==='clients') base=records.filter(r=>r.client.toLocaleLowerCase('pt-BR').includes(q));
+ else if(currentView==='colors') base=records.filter(r=>r.color.toLocaleLowerCase('pt-BR').includes(q));
+ else base=records.filter(r=>(r.client+' '+r.code+' '+r.color).toLocaleLowerCase('pt-BR').includes(q));
+ $('rows').innerHTML=base.map((r,i)=>`<tr><td><div class="client-cell"><div class="client-avatar" style="--avatar-bg:${['#e2f0e9','#e8e9fa','#f7eadf','#e3edf8'][i%4]};--avatar-color:${['#285c49','#4c4d8a','#93613b','#3c648a'][i%4]}">${esc(initials(r.client))}</div><div><div class="client-name">${esc(r.client)}</div><div class="client-code">${esc(r.code||'Sem código')}</div></div></div></td><td><span class="color-chip"><span class="swatch" style="background:${esc(r.swatch)}"></span>${esc(r.color)}</span></td><td><span class="price">${money(r.price)}</span></td><td><span class="tag">● Ativo</span></td><td><div class="actions"><button class="icon-btn" title="Editar" aria-label="Editar" data-edit="${esc(r.id)}">✎</button><button class="icon-btn" title="Excluir" aria-label="Excluir" data-delete="${esc(r.id)}">×</button></div></td></tr>`).join('');
+ $('empty').style.display=base.length?'none':'block';
+ $('row-count').textContent=`Exibindo ${base.length} de ${records.length} combinação(ões) cadastrada(s)`;
+ $('stat-clients').textContent=String(clients.length).padStart(2,'0'); $('stat-prices').textContent=String(records.length).padStart(2,'0');
+ $('stat-updated').textContent='Online'; $('stat-updated').style.fontSize='22px';
 }
 function openForm(record){$('form-panel').classList.add('open');$('form-title').textContent=record?'Editar preço por cliente e cor':'Definir preço para cor do cliente';$('edit-id').value=record?record.id:'';$('client').value=record?.client||'';$('code').value=record?.code||'';$('color').value=record?.color||'';$('price').value=record?record.price:'';$('client').focus();$('form-panel').scrollIntoView({behavior:'smooth',block:'nearest'})}
 function closeForm(){$('form-panel').classList.remove('open');$('price-form').reset();$('edit-id').value=''}
+async function ensureClient(name,code){
+ let found=clients.find(c=>String(c.nome||'').trim().toLocaleLowerCase('pt-BR')===name.trim().toLocaleLowerCase('pt-BR'));
+ if(found)return found;
+ const payload={nome:name.trim()};
+ if(code.trim()) payload.codigo=code.trim();
+ let res=await supabase.from('clientes').insert(payload).select('*').single();
+ if(res.error && code.trim() && /codigo|column/i.test(res.error.message)) res=await supabase.from('clientes').insert({nome:name.trim()}).select('*').single();
+ if(res.error) throw res.error; clients.push(res.data); return res.data;
+}
+async function ensureColor(name){
+ let found=colors.find(c=>String(c.nome||'').trim().toLocaleLowerCase('pt-BR')===name.trim().toLocaleLowerCase('pt-BR'));
+ if(found)return found;
+ const res=await supabase.from('cores').insert({nome:name.trim()}).select('*').single();
+ if(res.error) throw res.error; colors.push(res.data); return res.data;
+}
+$('login-form').addEventListener('submit',async e=>{
+ e.preventDefault(); const btn=$('login-submit'); btn.disabled=true;btn.textContent='Entrando...';
+ const {error}=await supabase.auth.signInWithPassword({email:$('login-email').value.trim(),password:$('login-password').value});
+ btn.disabled=false;btn.textContent='Entrar com segurança';
+ if(error){showLogin('Não foi possível entrar. Confira o e-mail e a senha. Detalhe: '+error.message);return;}
+ try{showApp();await loadAll();}catch(err){showApp();toast('Falha ao carregar dados: '+err.message);}
+});
+$('logout-btn').addEventListener('click',async()=>{const {error}=await supabase.auth.signOut();if(error){toast('Não foi possível sair: '+error.message);return;}showLogin();});
 $('add-top').addEventListener('click',()=>openForm());$('close-form').addEventListener('click',closeForm);$('cancel-form').addEventListener('click',closeForm);$('search').addEventListener('input',render);
-$('price-form').addEventListener('submit',e=>{e.preventDefault();const id=$('edit-id').value;const client=$('client').value.trim();const color=$('color').value.trim();const price=Number($('price').value);if(!client||!color||!Number.isFinite(price)||price<0)return;const existing=records.find(r=>r.id===Number(id));const obj={id:id?Number(id):nextId++,client,code:$('code').value.trim(),color,price,updated:new Date().toLocaleDateString('pt-BR'),swatch:existing?.swatch||'#dce3de'};if(id)records=records.map(r=>r.id===Number(id)?obj:r);else records.unshift(obj);closeForm();render();toast(id?'Preço atualizado nesta prévia.':'Preço cadastrado nesta prévia.');});
-$('rows').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]');const del=e.target.closest('[data-delete]');if(edit){const r=records.find(x=>x.id===Number(edit.dataset.edit));if(r)openForm(r)}if(del){const r=records.find(x=>x.id===Number(del.dataset.delete));if(r&&confirm(`Excluir o preço de ${r.client} — ${r.color}?`)){records=records.filter(x=>x.id!==r.id);render();toast('Registro removido desta prévia.')}}});
-$('export').addEventListener('click',()=>{const header=['Cliente','Código','Cor/acabamento','Preço (R$)','Atualizado em'];const csv=[header,...records.map(r=>[r.client,r.code,r.color,Number(r.price).toFixed(2).replace('.',','),r.updated])].map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='rt-colors-precos.csv';a.click();URL.revokeObjectURL(url);toast('CSV exportado para este dispositivo.');});
-const viewMeta={prices:['Preços por cliente','Preços por cliente','Defina um valor comercial para cada cor ou acabamento de cada cliente.','Tabela de preços por cliente','Cada linha representa o preço de uma cor para um cliente específico.','＋ Definir preço'],clients:['Clientes','Clientes','Visualize os clientes que possuem preços registrados.','Lista de clientes','Clientes encontrados na tabela de preços','＋ Novo cliente'],colors:['Cores e acabamentos','Cores e acabamentos','Veja os acabamentos cadastrados nos preços de clientes.','Lista de cores','Cores e acabamentos encontrados','＋ Novo preço']};
-document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const v=btn.dataset.view,m=viewMeta[v];$('crumb-title').textContent=m[0];$('page-title').textContent=m[1];$('page-subtitle').textContent=m[2];$('table-title').textContent=m[3];$('table-subtitle').textContent=m[4];$('add-top').textContent=m[5];if(v==='clients')$('search').placeholder='Buscar cliente...';else if(v==='colors')$('search').placeholder='Buscar cor ou acabamento...';else $('search').placeholder='Buscar cliente ou cor...';}));
-render();
+$('price-form').addEventListener('submit',async e=>{
+ e.preventDefault(); const btn=$('price-form').querySelector('[type=submit]');btn.disabled=true;btn.textContent='Salvando...';
+ try{
+  const editId=$('edit-id').value, clientName=$('client').value.trim(), colorName=$('color').value.trim(), price=Number($('price').value);
+  if(!clientName||!colorName||!Number.isFinite(price)||price<0)throw new Error('Confira cliente, cor e preço.');
+  const client=await ensureClient(clientName,$('code').value);
+  const color=await ensureColor(colorName);
+  let result;
+  if(editId){result=await supabase.from('cliente_cores').update({cliente_id:client.id,cor_id:color.id,preco:price}).eq('id',editId);}
+  else {result=await supabase.from('cliente_cores').upsert({cliente_id:client.id,cor_id:color.id,preco:price},{onConflict:'cliente_id,cor_id'});}
+  if(result.error)throw result.error;
+  closeForm();await loadAll();toast('Preço salvo no banco online.');
+ }catch(err){toast('Não foi possível salvar: '+err.message);}
+ finally{btn.disabled=false;btn.textContent='Salvar preço';}
+});
+$('rows').addEventListener('click',async e=>{
+ const edit=e.target.closest('[data-edit]'), del=e.target.closest('[data-delete]');
+ if(edit){const r=records.find(x=>String(x.id)===edit.dataset.edit);if(r)openForm(r);}
+ if(del){const r=records.find(x=>String(x.id)===del.dataset.delete);if(!r||!confirm(`Excluir o preço de ${r.client} — ${r.color}?`))return;
+ const {error}=await supabase.from('cliente_cores').delete().eq('id',r.id);
+ if(error){toast('Não foi possível excluir: '+error.message);return;}
+ await loadAll();toast('Preço excluído do banco online.');}
+});
+$('export').addEventListener('click',()=>{const header=['Cliente','Código','Cor/acabamento','Preço (R$)'];const csv=[header,...records.map(r=>[r.client,r.code,r.color,Number(r.price).toFixed(2).replace('.',',')])].map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='rt-colors-precos.csv';a.click();URL.revokeObjectURL(url);toast('CSV exportado.');});
+const viewMeta={prices:['Preços por cliente','Preços por cliente','Consulte os valores comerciais salvos no banco online.','Tabela de preços','Cada linha representa o preço de uma cor para um cliente específico.','＋ Novo preço'],clients:['Clientes','Clientes','Consulte clientes cadastrados no banco online.','Preços por cliente','Filtre os registros pelo cliente.','＋ Novo cliente'],colors:['Cores e acabamentos','Cores e acabamentos','Consulte cores e acabamentos cadastrados no banco online.','Preços por cliente','Filtre os registros pela cor ou acabamento.','＋ Novo preço']};
+document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentView=btn.dataset.view;const m=viewMeta[currentView];$('crumb-title').textContent=m[0];$('page-title').textContent=m[1];$('page-subtitle').textContent=m[2];$('table-title').textContent=m[3];$('table-subtitle').textContent=m[4];$('add-top').textContent=m[5];$('search').value='';$('search').placeholder=currentView==='clients'?'Buscar cliente...':currentView==='colors'?'Buscar cor ou acabamento...':'Buscar cliente ou cor...';render();}));
+(async()=>{const {data:{session}}=await supabase.auth.getSession();if(session){showApp();try{await loadAll()}catch(err){toast('Falha ao carregar dados: '+err.message)}}else showLogin();supabase.auth.onAuthStateChange(async(event,session)=>{if(event==='SIGNED_OUT')showLogin();});})();
 </script>
 </body>
 </html>
