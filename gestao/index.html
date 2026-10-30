@@ -81,7 +81,7 @@ tbody tr:hover{background:#f7faff}
 .import-drop strong{display:block;margin-top:8px;font-size:14px}.import-drop p{font-size:11px;color:#8092aa;margin:6px 0 14px}
 .import-drop input{max-width:100%;font-size:12px}
 #import-confirm:disabled{opacity:.55;cursor:not-allowed}
- .heading-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.import-main{background:#e8f1ff;color:#0755b8;border:1px solid #c9dcfb;font-weight:700;box-shadow:0 3px 10px rgba(7,95,213,.08)}.import-main:hover{background:#dceaff;transform:translateY(-1px)}@media(max-width:640px){.heading-actions{width:100%}.heading-actions .btn{flex:1;justify-content:center}}\n</style>
+ .heading-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.import-main{background:#e8f1ff;color:#0755b8;border:1px solid #c9dcfb;font-weight:700;box-shadow:0 3px 10px rgba(7,95,213,.08)}.import-main:hover{background:#dceaff;transform:translateY(-1px)}.import-main:disabled{opacity:.65;cursor:wait}@media(max-width:640px){.heading-actions{width:100%}.heading-actions .btn{flex:1;justify-content:center}}\n</style>
 </head>
 <body>
 
@@ -123,7 +123,7 @@ tbody tr:hover{background:#f7faff}
 <main class="main">
   <header class="topbar"><div class="crumb">RT COLORS <span style="padding:0 8px;color:#a4b3aa">/</span> <b id="crumb-title">Preços por cliente</b></div><div class="top-right"><div class="status"><span class="dot"></span> BANCO CONECTADO</div><div class="avatar">RT</div></div></header>
   <section class="content">
-    <div class="heading-row"><div><div class="eyebrow">CONTROLE COMERCIAL</div><h1 id="page-title">Preços por cliente</h1><div class="subtitle" id="page-subtitle">Consulte e mantenha os valores comerciais organizados em um só lugar.</div></div><div class="heading-actions"><button class="btn import-main" id="import-open" type="button"><span aria-hidden="true">⇧</span> Importar dados</button><button class="btn primary" id="add-top">＋ Novo preço</button></div></div>
+    <div class="heading-row"><div><div class="eyebrow">CONTROLE COMERCIAL</div><h1 id="page-title">Preços por cliente</h1><div class="subtitle" id="page-subtitle">Consulte e mantenha os valores comerciais organizados em um só lugar.</div></div><div class="heading-actions"><button class="btn import-main" id="sync-expedicao" type="button"><span aria-hidden="true">↻</span> Atualizar dados do RT Expedição</button><button class="btn primary" id="add-top">＋ Novo preço</button></div></div>
     <section class="hero"><div class="hero-copy"><div class="hero-title">RT COLORS <span style="font-weight:400">• Gestão</span></div><p>Controle de clientes, cores e preços com mais organização, agilidade e confiança.</p></div><div class="hero-side">Mais organização<br>para o seu negócio.</div></section>
     <div class="stats">
       <div class="stat"><div class="stat-top">Clientes cadastrados <span class="stat-icon">♙</span></div><div class="stat-value" id="stat-clients">00</div><div class="stat-foot">Clientes cadastrados no banco</div></div>
@@ -273,6 +273,21 @@ $('import-confirm').addEventListener('click',async()=>{
  $('import-result').textContent='Importados/atualizados: '+done+'. Falhas: '+failed.length+'. '+failed.slice(0,4).join(' | ');
  btn.textContent='Importação concluída';btn.disabled=true;
  if(done)toast(done+' preço(s) importado(s) ou atualizado(s).');
+});
+
+
+// Atualiza no Gestão a base compartilhada de clientes, cores e vínculos do RT Expedição.
+$('sync-expedicao').addEventListener('click',async()=>{
+ const btn=$('sync-expedicao');
+ btn.disabled=true;btn.innerHTML='<span aria-hidden="true">↻</span> Atualizando...';
+ try{
+  await loadAll();
+  toast('Dados atualizados: '+clients.length+' clientes e '+colors.length+' cores. Os preços permanecem para ajuste manual.');
+ }catch(err){
+  toast('Não foi possível atualizar: '+err.message);
+ }finally{
+  btn.disabled=false;btn.innerHTML='<span aria-hidden="true">↻</span> Atualizar dados do RT Expedição';
+ }
 });
 
 function render(){
