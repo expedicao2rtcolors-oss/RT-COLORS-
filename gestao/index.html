@@ -81,7 +81,7 @@ tbody tr:hover{background:#f7faff}
 .import-drop strong{display:block;margin-top:8px;font-size:14px}.import-drop p{font-size:11px;color:#8092aa;margin:6px 0 14px}
 .import-drop input{max-width:100%;font-size:12px}
 #import-confirm:disabled{opacity:.55;cursor:not-allowed}
-</style>
+ .heading-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.import-main{background:#e8f1ff;color:#0755b8;border:1px solid #c9dcfb;font-weight:700;box-shadow:0 3px 10px rgba(7,95,213,.08)}.import-main:hover{background:#dceaff;transform:translateY(-1px)}@media(max-width:640px){.heading-actions{width:100%}.heading-actions .btn{flex:1;justify-content:center}}\n</style>
 </head>
 <body>
 
@@ -123,7 +123,7 @@ tbody tr:hover{background:#f7faff}
 <main class="main">
   <header class="topbar"><div class="crumb">RT COLORS <span style="padding:0 8px;color:#a4b3aa">/</span> <b id="crumb-title">Preços por cliente</b></div><div class="top-right"><div class="status"><span class="dot"></span> BANCO CONECTADO</div><div class="avatar">RT</div></div></header>
   <section class="content">
-    <div class="heading-row"><div><div class="eyebrow">CONTROLE COMERCIAL</div><h1 id="page-title">Preços por cliente</h1><div class="subtitle" id="page-subtitle">Consulte e mantenha os valores comerciais organizados em um só lugar.</div></div><button class="btn primary" id="add-top">＋ Novo preço</button></div>
+    <div class="heading-row"><div><div class="eyebrow">CONTROLE COMERCIAL</div><h1 id="page-title">Preços por cliente</h1><div class="subtitle" id="page-subtitle">Consulte e mantenha os valores comerciais organizados em um só lugar.</div></div><div class="heading-actions"><button class="btn import-main" id="import-open" type="button"><span aria-hidden="true">⇧</span> Importar dados</button><button class="btn primary" id="add-top">＋ Novo preço</button></div></div>
     <section class="hero"><div class="hero-copy"><div class="hero-title">RT COLORS <span style="font-weight:400">• Gestão</span></div><p>Controle de clientes, cores e preços com mais organização, agilidade e confiança.</p></div><div class="hero-side">Mais organização<br>para o seu negócio.</div></section>
     <div class="stats">
       <div class="stat"><div class="stat-top">Clientes cadastrados <span class="stat-icon">♙</span></div><div class="stat-value" id="stat-clients">00</div><div class="stat-foot">Clientes cadastrados no banco</div></div>
@@ -158,7 +158,7 @@ tbody tr:hover{background:#f7faff}
       </form>
     </section>
     <section class="panel">
-      <div class="panel-head"><div><h2 id="table-title">Tabela de preços</h2><p id="table-subtitle">Preços cadastrados por cliente e cor/acabamento</p></div><div class="tools"><div class="search"><span>⌕</span><input id="search" type="search" placeholder="Buscar cliente ou cor..."></div><button class="btn" id="import-open">⇧ Importar Excel</button><button class="btn" id="export">⇩ Exportar CSV</button></div></div>
+      <div class="panel-head"><div><h2 id="table-title">Tabela de preços</h2><p id="table-subtitle">Preços cadastrados por cliente e cor/acabamento</p></div><div class="tools"><div class="search"><span>⌕</span><input id="search" type="search" placeholder="Buscar cliente ou cor..."></div><button class="btn" id="export">⇩ Exportar CSV</button></div></div>
       <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Cor / acabamento</th><th>Preço cadastrado</th><th>Status</th><th>Ações</th></tr></thead><tbody id="rows"></tbody></table><div id="empty" class="empty" style="display:none">Nenhum resultado encontrado. Tente outra busca ou cadastre um novo preço.</div></div>
       <div class="table-foot"><span id="row-count">Exibindo 4 registros demonstrativos</span><span>Moeda: Real brasileiro (BRL)</span></div>
     </section>
