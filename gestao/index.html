@@ -277,15 +277,28 @@ $('import-confirm').addEventListener('click',async()=>{
 
 function render(){
  const q=$('search').value.trim().toLocaleLowerCase('pt-BR');
- let base=records;
- if(currentView==='clients') base=records.filter(r=>r.client.toLocaleLowerCase('pt-BR').includes(q));
- else if(currentView==='colors') base=records.filter(r=>r.color.toLocaleLowerCase('pt-BR').includes(q));
- else base=records.filter(r=>(r.client+' '+r.code+' '+r.color).toLocaleLowerCase('pt-BR').includes(q));
- $('rows').innerHTML=base.map((r,i)=>`<tr><td><div class="client-cell"><div class="client-avatar" style="--avatar-bg:${['#e2f0e9','#e8e9fa','#f7eadf','#e3edf8'][i%4]};--avatar-color:${['#285c49','#4c4d8a','#93613b','#3c648a'][i%4]}">${esc(initials(r.client))}</div><div><div class="client-name">${esc(r.client)}</div><div class="client-code">${esc(r.code||'Sem código')}</div></div></div></td><td><span class="color-chip"><span class="swatch" style="background:${esc(r.swatch)}"></span>${esc(r.color)}</span></td><td><span class="price">${money(r.price)}</span></td><td><span class="tag">● Ativo</span></td><td><div class="actions"><button class="icon-btn" title="Editar" aria-label="Editar" data-edit="${esc(r.id)}">✎</button><button class="icon-btn" title="Excluir" aria-label="Excluir" data-delete="${esc(r.id)}">×</button></div></td></tr>`).join('');
- $('empty').style.display=base.length?'none':'block';
- $('row-count').textContent=`Exibindo ${base.length} de ${records.length} combinação(ões) cadastrada(s)`;
- $('stat-clients').textContent=String(clients.length).padStart(2,'0'); $('stat-prices').textContent=String(records.length).padStart(2,'0');
- $('stat-updated').textContent='Online'; $('stat-updated').style.fontSize='22px';
+ const head=document.querySelector('.table-wrap thead tr');
+ if(currentView==='clients'){
+  head.innerHTML='<th>Cliente</th><th>Código</th><th>Cores vinculadas</th><th>Observações</th><th>Cadastro</th>';
+  const base=clients.filter(c=>(String(c.nome||'')+' '+String(c.codigo||c.codigo_cliente||'')+' '+String(c.observacoes||'')).toLocaleLowerCase('pt-BR').includes(q));
+  $('rows').innerHTML=base.map((c,i)=>{const n=records.filter(r=>String(r.cliente_id)===String(c.id)).length;return '<tr><td><div class="client-cell"><div class="client-avatar">'+esc(initials(c.nome||'?'))+'</div><div><div class="client-name">'+esc(c.nome||'Sem nome')+'</div></div></div></td><td>'+esc(c.codigo||c.codigo_cliente||'—')+'</td><td><span class="tag">'+n+' cor(es)</span></td><td>'+esc(c.observacoes||'—')+'</td><td><span class="tag">No RT Expedição</span></td></tr>';}).join('');
+  $('row-count').textContent='Exibindo '+base.length+' de '+clients.length+' cliente(s) do RT Expedição';
+ }else if(currentView==='colors'){
+  head.innerHTML='<th>Cor / acabamento</th><th>Código</th><th>Clientes vinculados</th><th>Referência</th><th>Observações</th>';
+  const base=colors.filter(c=>(String(c.nome||'')+' '+String(c.codigo||'')+' '+String(c.observacoes||'')).toLocaleLowerCase('pt-BR').includes(q));
+  $('rows').innerHTML=base.map(c=>{const n=records.filter(r=>String(r.cor_id)===String(c.id)).length;return '<tr><td><span class="color-chip"><span class="swatch" style="background:'+esc(c.hex||'#dce3de')+'"></span>'+esc(c.nome||'Sem nome')+'</span></td><td>'+esc(c.codigo||'—')+'</td><td><span class="tag">'+n+' cliente(s)</span></td><td><span class="swatch" style="display:inline-block;vertical-align:middle;background:'+esc(c.hex||'#dce3de')+'"></span> '+esc(c.hex||'—')+'</td><td>'+esc(c.observacoes||'—')+'</td></tr>';}).join('');
+  $('row-count').textContent='Exibindo '+base.length+' de '+colors.length+' cor(es) do RT Expedição';
+ }else{
+  head.innerHTML='<th>Cliente</th><th>Cor / acabamento</th><th>Preço cadastrado</th><th>Status</th><th>Ações</th>';
+  const base=records.filter(r=>(r.client+' '+r.code+' '+r.color).toLocaleLowerCase('pt-BR').includes(q));
+  $('rows').innerHTML=base.map((r,i)=>'<tr><td><div class="client-cell"><div class="client-avatar" style="--avatar-bg:'+['#e2f0e9','#e8e9fa','#f7eadf','#e3edf8'][i%4]+';--avatar-color:'+['#285c49','#4c4d8a','#93613b','#3c648a'][i%4]+'">'+esc(initials(r.client))+'</div><div><div class="client-name">'+esc(r.client)+'</div><div class="client-code">'+esc(r.code||'Sem código')+'</div></div></div></td><td><span class="color-chip"><span class="swatch" style="background:'+esc(r.swatch)+'"></span>'+esc(r.color)+'</span></td><td><span class="price">'+money(r.price)+'</span></td><td><span class="tag">● Ativo</span></td><td><div class="actions"><button class="icon-btn" title="Editar" aria-label="Editar" data-edit="'+esc(r.id)+'">✎</button><button class="icon-btn" title="Excluir" aria-label="Excluir" data-delete="'+esc(r.id)+'">×</button></div></td></tr>').join('');
+  $('row-count').textContent='Exibindo '+base.length+' de '+records.length+' combinação(ões) cadastrada(s)';
+ }
+ $('empty').style.display=(currentView==='clients'?clients.length===0:currentView==='colors'?colors.length===0:records.length===0)&&$('rows').innerHTML===''?'block':($('rows').children.length?'none':'block');
+ $('stat-clients').textContent=String(clients.length).padStart(2,'0');
+ $('stat-prices').textContent=String(records.length).padStart(2,'0');
+ $('stat-updated').textContent='Online';$('stat-updated').style.fontSize='22px';
+ $('add-top').style.display=currentView==='prices'?'':'none';
 }
 function openForm(record){$('form-panel').classList.add('open');$('form-title').textContent=record?'Editar preço por cliente e cor':'Definir preço para cor do cliente';$('edit-id').value=record?record.id:'';$('client').value=record?.client||'';$('code').value=record?.code||'';$('color').value=record?.color||'';$('price').value=record?record.price:'';$('client').focus();$('form-panel').scrollIntoView({behavior:'smooth',block:'nearest'})}
 function closeForm(){$('form-panel').classList.remove('open');$('price-form').reset();$('edit-id').value=''}
