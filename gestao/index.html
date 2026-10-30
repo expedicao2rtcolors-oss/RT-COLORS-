@@ -76,6 +76,11 @@ tbody tr:hover{background:#f7faff}
   .topbar{position:sticky;top:0}
   .content{padding-bottom:22px}
 }
+
+.import-drop{border:2px dashed #b9cce3;border-radius:14px;background:#f7faff;padding:25px;text-align:center;color:#234263}
+.import-drop strong{display:block;margin-top:8px;font-size:14px}.import-drop p{font-size:11px;color:#8092aa;margin:6px 0 14px}
+.import-drop input{max-width:100%;font-size:12px}
+#import-confirm:disabled{opacity:.55;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -125,6 +130,19 @@ tbody tr:hover{background:#f7faff}
       <div class="stat"><div class="stat-top">Preços registrados <span class="stat-icon">＄</span></div><div class="stat-value" id="stat-prices">00</div><div class="stat-foot">Valores por cliente e acabamento</div></div>
       <div class="stat"><div class="stat-top">Última atualização <span class="stat-icon">◷</span></div><div class="stat-value" style="font-size:22px" id="stat-updated">Hoje</div><div class="stat-foot">Sincronizado com o banco online</div></div>
     </div>
+
+<section class="panel import-panel" id="import-panel" style="display:none;margin-bottom:20px">
+ <div class="panel-head"><div><h2>Importar dados de planilha</h2><p>Envie um arquivo Excel ou CSV com cliente, cor e preço.</p></div><button class="btn" id="import-close" type="button">Fechar</button></div>
+ <div style="padding:20px">
+  <div class="import-drop"><div style="font-size:28px">▤</div><strong>Selecione sua planilha</strong><p>Formatos aceitos: .xlsx, .xls e .csv</p><input id="import-file" type="file" accept=".xlsx,.xls,.csv"></div>
+  <div id="import-help" class="subtitle" style="margin-top:12px">Colunas esperadas: Cliente, Cor ou Acabamento e Preço. Código do cliente é opcional. A primeira linha deve conter os títulos.</div>
+  <div id="import-preview" style="display:none;margin-top:18px">
+   <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap"><strong id="import-summary">Prévia da importação</strong><button class="btn primary" id="import-confirm" type="button">Importar para o banco</button></div>
+   <div class="table-wrap"><table style="min-width:520px"><thead><tr><th>Cliente</th><th>Cor / acabamento</th><th>Preço</th><th>Validação</th></tr></thead><tbody id="import-rows"></tbody></table></div>
+  </div>
+  <div id="import-result" class="subtitle" style="margin-top:12px"></div>
+ </div>
+</section>
     <section class="panel form-panel" id="form-panel">
       <div class="form-head"><h2 id="form-title">Cadastrar preço</h2><button class="icon-btn" id="close-form" aria-label="Fechar">×</button></div>
       <form id="price-form">
@@ -140,7 +158,7 @@ tbody tr:hover{background:#f7faff}
       </form>
     </section>
     <section class="panel">
-      <div class="panel-head"><div><h2 id="table-title">Tabela de preços</h2><p id="table-subtitle">Preços cadastrados por cliente e cor/acabamento</p></div><div class="tools"><div class="search"><span>⌕</span><input id="search" type="search" placeholder="Buscar cliente ou cor..."></div><button class="btn" id="export">⇩ Exportar CSV</button></div></div>
+      <div class="panel-head"><div><h2 id="table-title">Tabela de preços</h2><p id="table-subtitle">Preços cadastrados por cliente e cor/acabamento</p></div><div class="tools"><div class="search"><span>⌕</span><input id="search" type="search" placeholder="Buscar cliente ou cor..."></div><button class="btn" id="import-open">⇧ Importar Excel</button><button class="btn" id="export">⇩ Exportar CSV</button></div></div>
       <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Cor / acabamento</th><th>Preço cadastrado</th><th>Status</th><th>Ações</th></tr></thead><tbody id="rows"></tbody></table><div id="empty" class="empty" style="display:none">Nenhum resultado encontrado. Tente outra busca ou cadastre um novo preço.</div></div>
       <div class="table-foot"><span id="row-count">Exibindo 4 registros demonstrativos</span><span>Moeda: Real brasileiro (BRL)</span></div>
     </section>
@@ -151,6 +169,7 @@ tbody tr:hover{background:#f7faff}
 </div>
 <div class="toast" id="toast" role="status"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = 'https://snixqpvwkxfjuhbaeizu.supabase.co';
@@ -181,6 +200,81 @@ async function loadAll(){
   });
   render();
 }
+
+/* Importação de planilhas Excel/CSV */
+let importRows=[];
+const normalizeHeader=v=>String(v??'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+function getImportValue(row,aliases){const keys=Object.keys(row);const key=keys.find(k=>aliases.includes(normalizeHeader(k)));return key===undefined?'':row[key];}
+function parsePrice(v){
+ if(typeof v==='number')return v;
+ let s=String(v??'').trim().replace(/R\\$/gi,'').replace(/\\s/g,'');
+ if(!s)return NaN;
+ if(s.includes(',')&&s.includes('.'))s=s.replace(/\\./g,'').replace(',','.');
+ else if(s.includes(','))s=s.replace(',','.');
+ const n=Number(s);return Number.isFinite(n)?n:NaN;
+}
+function closeImport(){ $('import-panel').style.display='none'; $('import-file').value=''; $('import-preview').style.display='none'; $('import-result').textContent=''; importRows=[]; }
+$('import-open').addEventListener('click',()=>{$('import-panel').style.display='block';$('import-panel').scrollIntoView({behavior:'smooth',block:'start'});});
+$('import-close').addEventListener('click',closeImport);
+$('import-file').addEventListener('change',async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ $('import-result').textContent='Lendo planilha...';
+ try{
+  const data=await file.arrayBuffer();
+  const wb=XLSX.read(data,{type:'array',cellDates:false});
+  const sheet=wb.Sheets[wb.SheetNames[0]];
+  const raw=XLSX.utils.sheet_to_json(sheet,{defval:'',raw:true});
+  importRows=raw.map((row,i)=>{
+   const client=String(getImportValue(row,['cliente','nomecliente','razaosocial'])).trim();
+   const color=String(getImportValue(row,['cor','acabamento','nomecor','coracabamento'])).trim();
+   const code=String(getImportValue(row,['codigo','codigocliente','codcliente'])).trim();
+   const price=parsePrice(getImportValue(row,['preco','valor','precounitario','valorunitario']));
+   return {line:i+2,client,color,code,price,valid:!!client&&!!color&&Number.isFinite(price)&&price>=0};
+  }).filter(r=>r.client||r.color||Number.isFinite(r.price));
+  const valid=importRows.filter(r=>r.valid).length;
+  $('import-summary').textContent=valid+' registro(s) válido(s) de '+importRows.length;
+  $('import-rows').innerHTML=importRows.slice(0,100).map(r=>'<tr><td>'+esc(r.client||'—')+'</td><td>'+esc(r.color||'—')+'</td><td>'+ (Number.isFinite(r.price)?money(r.price):'—')+'</td><td><span class="tag" style="'+(r.valid?'':'background:#fff0ed;color:#b44732')+'">'+(r.valid?'Válido':'Verificar linha '+r.line)+'</span></td></tr>').join('');
+  $('import-preview').style.display='block';
+  $('import-result').textContent=importRows.length>100?'A prévia mostra os primeiros 100 registros. Todos os registros válidos poderão ser importados.':'Confira os dados antes de confirmar.';
+  $('import-confirm').disabled=!valid;
+ }catch(err){$('import-result').textContent='Erro ao ler arquivo: '+err.message;}
+});
+async function findOrCreateClient(row){
+ let found=clients.find(x=>String(x.nome||'').trim().toLowerCase()===row.client.toLowerCase());
+ if(found)return found;
+ let payload={nome:row.client};if(row.code)payload.codigo=row.code;
+ let res=await supabase.from('clientes').insert(payload).select('*').single();
+ if(res.error&&row.code)res=await supabase.from('clientes').insert({nome:row.client}).select('*').single();
+ if(res.error)throw res.error;clients.push(res.data);return res.data;
+}
+async function findOrCreateColor(name){
+ let found=colors.find(x=>String(x.nome||'').trim().toLowerCase()===name.toLowerCase());
+ if(found)return found;
+ const res=await supabase.from('cores').insert({nome:name}).select('*').single();
+ if(res.error)throw res.error;colors.push(res.data);return res.data;
+}
+$('import-confirm').addEventListener('click',async()=>{
+ const valid=importRows.filter(r=>r.valid);if(!valid.length)return;
+ const btn=$('import-confirm');btn.disabled=true;btn.textContent='Importando...';
+ let done=0,failed=[];
+ for(const row of valid){
+  try{
+   const client=await findOrCreateClient(row);
+   const color=await findOrCreateColor(row.color);
+   const existing=await supabase.from('cliente_cores').select('id').eq('cliente_id',client.id).eq('cor_id',color.id).maybeSingle();
+   if(existing.error)throw existing.error;
+   let save;
+   if(existing.data)save=await supabase.from('cliente_cores').update({preco:row.price}).eq('id',existing.data.id);
+   else save=await supabase.from('cliente_cores').insert({cliente_id:client.id,cor_id:color.id,preco:row.price});
+   if(save.error)throw save.error;done++;
+  }catch(err){failed.push('Linha '+row.line+': '+err.message);}
+ }
+ try{await loadAll();}catch(err){failed.push('Atualização da tela: '+err.message);}
+ $('import-result').textContent='Importados/atualizados: '+done+'. Falhas: '+failed.length+'. '+failed.slice(0,4).join(' | ');
+ btn.textContent='Importação concluída';btn.disabled=true;
+ if(done)toast(done+' preço(s) importado(s) ou atualizado(s).');
+});
+
 function render(){
  const q=$('search').value.trim().toLocaleLowerCase('pt-BR');
  let base=records;
