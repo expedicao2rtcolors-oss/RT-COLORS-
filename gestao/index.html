@@ -40,11 +40,13 @@
 @media(max-width:900px){#login-screen{padding:18px}.login-promo{width:46%;padding:34px 28px}.login-card{width:54%;padding:38px 30px}.promo-art{opacity:.35}.shell{grid-template-columns:76px minmax(0,1fr)}}
 @media(max-width:650px){#login-screen{padding:14px;background:linear-gradient(145deg,#071d3b,#0b4c83)}.login-promo{display:none}.login-card{width:min(100%,440px);min-height:0;max-height:none;border-radius:18px;padding:30px 24px}.login-brand{display:flex}.login-card h2{font-size:24px}.shell{display:block}.sidebar{display:none}.topbar{height:60px;padding:0 14px}.content{padding:20px 12px}.hero{padding:22px 20px;min-height:0}.stats{grid-template-columns:1fr}.stat{padding:16px}.status{display:none}}
 
+
+#login-screen{display:none!important}
 </style>
 </head>
 <body>
 
-<div id="login-screen">
+<div id="login-screen" hidden>
   <section class="login-promo" aria-label="Apresentação RT COLORS Gestão">
     <div class="promo-brand"><span class="promo-mark">RT</span><span><strong>RT COLORS</strong><small>GESTÃO</small></span></div>
     <div class="promo-copy">
@@ -67,7 +69,7 @@
     <p style="margin:16px 0 0;font-size:10px">Acesso restrito a usuários autenticados.</p>
   </form>
 </div>
-<div id="app" hidden>
+<div id="app">
 <div class="shell">
 <aside class="sidebar">
   <div class="brand"><div class="brand-mark">RT</div><div class="brand-copy"><strong>RT COLORS</strong><small>GESTÃO</small></div></div>
@@ -77,10 +79,10 @@
     <button type="button" data-view="clients"><span class="ico">♙</span><span class="nav-text">Clientes</span></button>
     <button type="button" data-view="colors"><span class="ico">◉</span><span class="nav-text">Cores e acabamentos</span></button>
   </nav>
-  <div class="sidebar-note"><b>✦ RT COLORS Gestão</b>Dados carregados do banco online com acesso autenticado.</div>
+  <div class="sidebar-note"><b>✦ RT COLORS Gestão</b>Dados compartilhados com o aplicativo RT COLORS.</div>
 </aside>
 <main class="main">
-  <header class="topbar"><div class="crumb">RT COLORS <span style="padding:0 8px;color:#a4b3aa">/</span> <b id="crumb-title">Preços por cliente</b></div><div class="top-right"><div class="status"><span class="dot"></span> BANCO CONECTADO</div><button class="btn" id="logout-btn" type="button">Sair</button><div class="avatar">RT</div></div></header>
+  <header class="topbar"><div class="crumb">RT COLORS <span style="padding:0 8px;color:#a4b3aa">/</span> <b id="crumb-title">Preços por cliente</b></div><div class="top-right"><div class="status"><span class="dot"></span> BANCO CONECTADO</div><div class="avatar">RT</div></div></header>
   <section class="content">
     <div class="heading-row"><div><div class="eyebrow">CONTROLE COMERCIAL</div><h1 id="page-title">Preços por cliente</h1><div class="subtitle" id="page-subtitle">Consulte e mantenha os valores comerciais organizados em um só lugar.</div></div><button class="btn primary" id="add-top">＋ Novo preço</button></div>
     <section class="hero"><div class="hero-copy"><div class="hero-title">RT COLORS <span style="font-weight:400">• Gestão</span></div><p>Controle de clientes, cores e preços com mais organização, agilidade e confiança.</p></div><div class="hero-side">Mais organização<br>para o seu negócio.</div></section>
@@ -108,7 +110,7 @@
       <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Cor / acabamento</th><th>Preço cadastrado</th><th>Status</th><th>Ações</th></tr></thead><tbody id="rows"></tbody></table><div id="empty" class="empty" style="display:none">Nenhum resultado encontrado. Tente outra busca ou cadastre um novo preço.</div></div>
       <div class="table-foot"><span id="row-count">Exibindo 4 registros demonstrativos</span><span>Moeda: Real brasileiro (BRL)</span></div>
     </section>
-    <div class="footer-note"><span>●</span> Conectado ao Supabase. Alterações confirmadas pelo banco online.</div>
+    <div class="footer-note"><span>●</span> Conectado ao banco compartilhado do RT COLORS.</div>
   </section>
 </main>
 </div>
@@ -174,14 +176,6 @@ async function ensureColor(name){
  const res=await supabase.from('cores').insert({nome:name.trim()}).select('*').single();
  if(res.error) throw res.error; colors.push(res.data); return res.data;
 }
-$('login-form').addEventListener('submit',async e=>{
- e.preventDefault(); const btn=$('login-submit'); btn.disabled=true;btn.textContent='Entrando...';
- const {error}=await supabase.auth.signInWithPassword({email:$('login-email').value.trim(),password:$('login-password').value});
- btn.disabled=false;btn.textContent='Entrar com segurança';
- if(error){showLogin('Não foi possível entrar. Confira o e-mail e a senha. Detalhe: '+error.message);return;}
- try{showApp();await loadAll();}catch(err){showApp();toast('Falha ao carregar dados: '+err.message);}
-});
-$('logout-btn').addEventListener('click',async()=>{const {error}=await supabase.auth.signOut();if(error){toast('Não foi possível sair: '+error.message);return;}showLogin();});
 $('add-top').addEventListener('click',()=>openForm());$('close-form').addEventListener('click',closeForm);$('cancel-form').addEventListener('click',closeForm);$('search').addEventListener('input',render);
 $('price-form').addEventListener('submit',async e=>{
  e.preventDefault(); const btn=$('price-form').querySelector('[type=submit]');btn.disabled=true;btn.textContent='Salvando...';
@@ -209,7 +203,7 @@ $('rows').addEventListener('click',async e=>{
 $('export').addEventListener('click',()=>{const header=['Cliente','Código','Cor/acabamento','Preço (R$)'];const csv=[header,...records.map(r=>[r.client,r.code,r.color,Number(r.price).toFixed(2).replace('.',',')])].map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='rt-colors-precos.csv';a.click();URL.revokeObjectURL(url);toast('CSV exportado.');});
 const viewMeta={prices:['Preços por cliente','Preços por cliente','Consulte os valores comerciais salvos no banco online.','Tabela de preços','Cada linha representa o preço de uma cor para um cliente específico.','＋ Novo preço'],clients:['Clientes','Clientes','Consulte clientes cadastrados no banco online.','Preços por cliente','Filtre os registros pelo cliente.','＋ Novo cliente'],colors:['Cores e acabamentos','Cores e acabamentos','Consulte cores e acabamentos cadastrados no banco online.','Preços por cliente','Filtre os registros pela cor ou acabamento.','＋ Novo preço']};
 document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentView=btn.dataset.view;const m=viewMeta[currentView];$('crumb-title').textContent=m[0];$('page-title').textContent=m[1];$('page-subtitle').textContent=m[2];$('table-title').textContent=m[3];$('table-subtitle').textContent=m[4];$('add-top').textContent=m[5];$('search').value='';$('search').placeholder=currentView==='clients'?'Buscar cliente...':currentView==='colors'?'Buscar cor ou acabamento...':'Buscar cliente ou cor...';render();}));
-(async()=>{const {data:{session}}=await supabase.auth.getSession();if(session){showApp();try{await loadAll()}catch(err){toast('Falha ao carregar dados: '+err.message)}}else showLogin();supabase.auth.onAuthStateChange(async(event,session)=>{if(event==='SIGNED_OUT')showLogin();});})();
+(async()=>{showApp();try{await loadAll();}catch(err){toast('Falha ao carregar dados: '+err.message);$('rows').innerHTML='<tr><td colspan="5" class="empty">Erro ao carregar dados: '+esc(err.message)+'</td></tr>';}})();
 </script>
 </body>
 </html>
