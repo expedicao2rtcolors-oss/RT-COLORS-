@@ -190,15 +190,22 @@ async function loadAll(){
     supabase.from('cores').select('*').order('nome'),
     supabase.from('cliente_cores').select('*')
   ]);
-  const err = cRes.error || coRes.error || relRes.error;
-  if(err) throw err;
+  if(cRes.error) throw new Error('Clientes: '+cRes.error.message);
+  if(coRes.error) throw new Error('Cores: '+coRes.error.message);
+  // O catálogo deve carregar mesmo que a tabela de vínculos/preços apresente falha.
   clients=cRes.data||[]; colors=coRes.data||[];
-  records=(relRes.data||[]).map(r=>{
+  if(relRes.error){
+    console.warn('Vínculos/preços não carregaram:',relRes.error);
+    records=[];
+  }else records=(relRes.data||[]).map(r=>{
     const c=clients.find(x=>String(x.id)===String(r.cliente_id));
     const co=colors.find(x=>String(x.id)===String(r.cor_id));
     return {id:r.id,cliente_id:r.cliente_id,cor_id:r.cor_id,client:c?.nome||'Cliente não encontrado',code:c?.codigo||c?.codigo_cliente||'',color:co?.nome||'Cor não encontrada',price:Number(r.preco||0),updated:r.atualizado_em||r.criado_em||'',swatch:co?.hex||'#dce3de',observacoes:r.observacoes||''};
   });
   render();
+  $('stat-clients').textContent=clients.length;
+  $('stat-prices').textContent=records.filter(r=>r.price>0).length;
+  if(relRes.error) toast('Clientes e cores carregados. Falha ao carregar vínculos/preços: '+relRes.error.message);
 }
 
 /* Importação de planilhas Excel/CSV */
